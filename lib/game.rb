@@ -5,25 +5,26 @@ class Game
   attr_accessor :human_player, :enemies, :players_left, :enemies_in_sight
 
   def initialize(human_player)
-    @players_left = 10
-    @enemies = []
+    @players_left = 6
+    
+    @enemies_in_sight = []
     @human_player = HumanPlayer.new(human_player)
     4.times do |i|
-      @enemies << Player.new("player#{i + 1}")
+      @enemies_in_sight << Player.new("player#{i + 1}")
     end
   end
 
   def kill_player
-    @enemies = @enemies.select { |player| player.life_points.positive? }
+    @enemies_in_sight = @enemies_in_sight.select { |player| player.life_points.positive? }
   end
 
   def is_still_ongoin?
-    @human_player.life_points.positive? && @enemies.length.positive?
+    @human_player.life_points.positive? && @enemies_in_sight.length.positive?
   end
 
   def show_players
-    puts @human_player.show_state
-    puts "Il reste #{@enemies.length} joueurs"
+    @human_player.show_state
+    puts "Il reste #{@enemies_in_sight.length} joueurs"
   end
 
   def menu
@@ -31,7 +32,7 @@ class Game
     puts "Plusieurs options s'offre à vous"
     puts "Pour chercher une arme tapez 'a'"
     puts "Pour chercher un pack de soin tapez 's'"
-    @enemies.each { |player| puts "Pour attaquer #{player.name} tapez #{@enemies.index(player)+1}" }
+    @enemies_in_sight.each { |player| puts "Pour attaquer #{player.name} tapez #{@enemies_in_sight.index(player)+1}" }
   end
 
     # def kill_player
@@ -47,13 +48,13 @@ class Game
         when "s"
           @human_player.search_health_pack
         when "1"
-          @human_player.attack(@enemies[0])
+          @human_player.attack(@enemies_in_sight[0])
         when "2"
-          @human_player.attack(@enemies[1])
+          @human_player.attack(@enemies_in_sight[1])
         when "3"
-          @human_player.attack(@enemies[2])
+          @human_player.attack(@enemies_in_sight[2])
         when "4"
-          @human_player.attack(@enemies[3])
+          @human_player.attack(@enemies_in_sight[3])
         else
           puts "Pick another number gaddem"
       end
@@ -61,7 +62,7 @@ class Game
   end
   
   def enemies_attack
-    @enemies.each { |player| player.attack(@human_player)}
+    @enemies_in_sight.each { |player| player.attack(@human_player)}
   end
 
   def end
@@ -72,9 +73,9 @@ class Game
     end
   end
 
-  @enemies_in_sight = []
+  
   def new_players_in_sight
-    if @enemies_in_sight == @players_left
+    if  @players_left <= 0
       puts "Tous les ennemis sont en vue"
     else
       dice = rand(1..6)
@@ -83,12 +84,19 @@ class Game
         puts "Pas de nouvel ennemie en vue"
       when 2..4
         @enemies_in_sight << Player.new("player#{rand(10..1000)}")
-        puts "Nouveau joueur dans le game"
+        puts "ATTENTION ! Un nouveau joueur en vue", ''
+        @players_left -= 1
+        puts "Il reste #{@players_left} joueurs cachés en tout"
       when 5..6
-        2.times do |i|
           @enemies_in_sight << Player.new("player#{rand(10..1000)}")
-      end
+          @enemies_in_sight << Player.new("player#{rand(10..1000)}")
+          puts "ATTENTION !! Deux nouveaux joueurs en vue", ''
+          @players_left -= 2
+          puts "Il reste #{@players_left} joueurs cachés en tout", ''
+
+      
     end
+    
   end
 end
 end
