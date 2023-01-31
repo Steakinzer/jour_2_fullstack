@@ -6,7 +6,6 @@ class Game
 
   def initialize(human_player)
     @players_left = 6
-    
     @enemies_in_sight = []
     @human_player = HumanPlayer.new(human_player)
     4.times do |i|
@@ -32,7 +31,7 @@ class Game
     puts "Plusieurs options s'offre à vous"
     puts "Pour chercher une arme tapez 'a'"
     puts "Pour chercher un pack de soin tapez 's'"
-    @enemies_in_sight.each { |player| puts "Pour attaquer #{player.name} tapez #{@enemies_in_sight.index(player)+1}" }
+    @enemies_in_sight.each { |player| puts "Pour attaquer #{player.name} tapez #{@enemies_in_sight.index(player)}" }
   end
 
     # def kill_player
@@ -41,26 +40,23 @@ class Game
 
   
   def menu_choice
+    
     choice = gets.chomp
+    if choice =~ /[0-9]/
+      choice = choice.to_i
+    end
       case choice
         when "a"
           @human_player.search_weapon
         when "s"
           @human_player.search_health_pack
-        when "1"
-          @human_player.attack(@enemies_in_sight[0])
-        when "2"
-          @human_player.attack(@enemies_in_sight[1])
-        when "3"
-          @human_player.attack(@enemies_in_sight[2])
-        when "4"
-          @human_player.attack(@enemies_in_sight[3])
+        when 0...@enemies_in_sight.length
+          @human_player.attack(@enemies_in_sight[choice])
         else
           puts "Pick another number gaddem"
       end
       self.kill_player
   end
-  
   def enemies_attack
     @enemies_in_sight.each { |player| player.attack(@human_player)}
   end
